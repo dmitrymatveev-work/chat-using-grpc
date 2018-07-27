@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Grpc.Core;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Grpc.Core;
 
 namespace ChatServer
 {
@@ -17,7 +16,8 @@ namespace ChatServer
             if (_users.ContainsKey(request.Username))
             {
                 return Task.FromResult(new IntroResponse { Message = "User with such name already exists." });
-            } else
+            }
+            else
             {
                 _users.TryAdd(request.Username, null);
                 return Task.FromResult(new IntroResponse { Message = "OK" });
@@ -26,7 +26,7 @@ namespace ChatServer
 
         public override async Task Connect(IAsyncStreamReader<Post> request, IServerStreamWriter<Post> response, ServerCallContext context)
         {
-            while(await request.MoveNext())
+            while (await request.MoveNext())
             {
                 var post = request.Current;
                 _users[post.Username] = response;
@@ -36,7 +36,7 @@ namespace ChatServer
 
         private async Task Post(Post post)
         {
-            foreach(var user in _users)
+            foreach (var user in _users)
             {
                 var response = user.Value;
                 if (response == null)
