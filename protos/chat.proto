@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service Chat {
+    rpc Introduce (IntroRequest) returns (IntroResponse) {}
+}
+
+message IntroRequest {
+    string username = 1;
+}
+
+message IntroResponse {
+    string message = 1;
+}
