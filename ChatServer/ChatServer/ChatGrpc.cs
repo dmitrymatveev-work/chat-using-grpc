@@ -13,6 +13,7 @@ public static partial class Chat
 
   static readonly grpc::Marshaller<global::IntroRequest> __Marshaller_IntroRequest = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::IntroRequest.Parser.ParseFrom);
   static readonly grpc::Marshaller<global::IntroResponse> __Marshaller_IntroResponse = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::IntroResponse.Parser.ParseFrom);
+  static readonly grpc::Marshaller<global::Post> __Marshaller_Post = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Post.Parser.ParseFrom);
 
   static readonly grpc::Method<global::IntroRequest, global::IntroResponse> __Method_Introduce = new grpc::Method<global::IntroRequest, global::IntroResponse>(
       grpc::MethodType.Unary,
@@ -20,6 +21,13 @@ public static partial class Chat
       "Introduce",
       __Marshaller_IntroRequest,
       __Marshaller_IntroResponse);
+
+  static readonly grpc::Method<global::Post, global::Post> __Method_Connect = new grpc::Method<global::Post, global::Post>(
+      grpc::MethodType.DuplexStreaming,
+      __ServiceName,
+      "Connect",
+      __Marshaller_Post,
+      __Marshaller_Post);
 
   /// <summary>Service descriptor</summary>
   public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -31,6 +39,11 @@ public static partial class Chat
   public abstract partial class ChatBase
   {
     public virtual global::System.Threading.Tasks.Task<global::IntroResponse> Introduce(global::IntroRequest request, grpc::ServerCallContext context)
+    {
+      throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+    }
+
+    public virtual global::System.Threading.Tasks.Task Connect(grpc::IAsyncStreamReader<global::Post> requestStream, grpc::IServerStreamWriter<global::Post> responseStream, grpc::ServerCallContext context)
     {
       throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
     }
@@ -76,6 +89,14 @@ public static partial class Chat
     {
       return CallInvoker.AsyncUnaryCall(__Method_Introduce, null, options, request);
     }
+    public virtual grpc::AsyncDuplexStreamingCall<global::Post, global::Post> Connect(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+    {
+      return Connect(new grpc::CallOptions(headers, deadline, cancellationToken));
+    }
+    public virtual grpc::AsyncDuplexStreamingCall<global::Post, global::Post> Connect(grpc::CallOptions options)
+    {
+      return CallInvoker.AsyncDuplexStreamingCall(__Method_Connect, null, options);
+    }
     /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
     protected override ChatClient NewInstance(ClientBaseConfiguration configuration)
     {
@@ -88,7 +109,8 @@ public static partial class Chat
   public static grpc::ServerServiceDefinition BindService(ChatBase serviceImpl)
   {
     return grpc::ServerServiceDefinition.CreateBuilder()
-        .AddMethod(__Method_Introduce, serviceImpl.Introduce).Build();
+        .AddMethod(__Method_Introduce, serviceImpl.Introduce)
+        .AddMethod(__Method_Connect, serviceImpl.Connect).Build();
   }
 
 }

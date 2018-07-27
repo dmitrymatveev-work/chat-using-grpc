@@ -23,14 +23,16 @@ public static partial class ChatReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "CgpjaGF0LnByb3RvIiAKDEludHJvUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEo",
-          "CSIgCg1JbnRyb1Jlc3BvbnNlEg8KB21lc3NhZ2UYASABKAkyNAoEQ2hhdBIs",
-          "CglJbnRyb2R1Y2USDS5JbnRyb1JlcXVlc3QaDi5JbnRyb1Jlc3BvbnNlIgBi",
-          "BnByb3RvMw=="));
+          "CSIgCg1JbnRyb1Jlc3BvbnNlEg8KB21lc3NhZ2UYASABKAkiKQoEUG9zdBIQ",
+          "Cgh1c2VybmFtZRgBIAEoCRIPCgdtZXNzYWdlGAIgASgJMlMKBENoYXQSLAoJ",
+          "SW50cm9kdWNlEg0uSW50cm9SZXF1ZXN0Gg4uSW50cm9SZXNwb25zZSIAEh0K",
+          "B0Nvbm5lY3QSBS5Qb3N0GgUuUG9zdCIAKAEwAWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::IntroRequest), global::IntroRequest.Parser, new[]{ "Username" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::IntroResponse), global::IntroResponse.Parser, new[]{ "Message" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::IntroResponse), global::IntroResponse.Parser, new[]{ "Message" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Post), global::Post.Parser, new[]{ "Username", "Message" }, null, null, null)
         }));
   }
   #endregion
@@ -286,6 +288,163 @@ public sealed partial class IntroResponse : pb::IMessage<IntroResponse> {
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
+          Message = input.ReadString();
+          break;
+        }
+      }
+    }
+  }
+
+}
+
+public sealed partial class Post : pb::IMessage<Post> {
+  private static readonly pb::MessageParser<Post> _parser = new pb::MessageParser<Post>(() => new Post());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pb::MessageParser<Post> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::ChatReflection.Descriptor.MessageTypes[2]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public Post() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public Post(Post other) : this() {
+    username_ = other.username_;
+    message_ = other.message_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public Post Clone() {
+    return new Post(this);
+  }
+
+  /// <summary>Field number for the "username" field.</summary>
+  public const int UsernameFieldNumber = 1;
+  private string username_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public string Username {
+    get { return username_; }
+    set {
+      username_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "message" field.</summary>
+  public const int MessageFieldNumber = 2;
+  private string message_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public string Message {
+    get { return message_; }
+    set {
+      message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override bool Equals(object other) {
+    return Equals(other as Post);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public bool Equals(Post other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (Username != other.Username) return false;
+    if (Message != other.Message) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (Username.Length != 0) hash ^= Username.GetHashCode();
+    if (Message.Length != 0) hash ^= Message.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void WriteTo(pb::CodedOutputStream output) {
+    if (Username.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(Username);
+    }
+    if (Message.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(Message);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public int CalculateSize() {
+    int size = 0;
+    if (Username.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Username);
+    }
+    if (Message.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(Post other) {
+    if (other == null) {
+      return;
+    }
+    if (other.Username.Length != 0) {
+      Username = other.Username;
+    }
+    if (other.Message.Length != 0) {
+      Message = other.Message;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(pb::CodedInputStream input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          Username = input.ReadString();
+          break;
+        }
+        case 18: {
           Message = input.ReadString();
           break;
         }

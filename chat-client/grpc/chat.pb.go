@@ -34,7 +34,7 @@ func (m *IntroRequest) Reset()         { *m = IntroRequest{} }
 func (m *IntroRequest) String() string { return proto.CompactTextString(m) }
 func (*IntroRequest) ProtoMessage()    {}
 func (*IntroRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_chat_08414bdb60c06f38, []int{0}
+	return fileDescriptor_chat_5679f0ed12d39509, []int{0}
 }
 func (m *IntroRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IntroRequest.Unmarshal(m, b)
@@ -72,7 +72,7 @@ func (m *IntroResponse) Reset()         { *m = IntroResponse{} }
 func (m *IntroResponse) String() string { return proto.CompactTextString(m) }
 func (*IntroResponse) ProtoMessage()    {}
 func (*IntroResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_chat_08414bdb60c06f38, []int{1}
+	return fileDescriptor_chat_5679f0ed12d39509, []int{1}
 }
 func (m *IntroResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IntroResponse.Unmarshal(m, b)
@@ -99,9 +99,56 @@ func (m *IntroResponse) GetMessage() string {
 	return ""
 }
 
+type Post struct {
+	Username             string   `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Post) Reset()         { *m = Post{} }
+func (m *Post) String() string { return proto.CompactTextString(m) }
+func (*Post) ProtoMessage()    {}
+func (*Post) Descriptor() ([]byte, []int) {
+	return fileDescriptor_chat_5679f0ed12d39509, []int{2}
+}
+func (m *Post) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Post.Unmarshal(m, b)
+}
+func (m *Post) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Post.Marshal(b, m, deterministic)
+}
+func (dst *Post) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Post.Merge(dst, src)
+}
+func (m *Post) XXX_Size() int {
+	return xxx_messageInfo_Post.Size(m)
+}
+func (m *Post) XXX_DiscardUnknown() {
+	xxx_messageInfo_Post.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Post proto.InternalMessageInfo
+
+func (m *Post) GetUsername() string {
+	if m != nil {
+		return m.Username
+	}
+	return ""
+}
+
+func (m *Post) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*IntroRequest)(nil), "IntroRequest")
 	proto.RegisterType((*IntroResponse)(nil), "IntroResponse")
+	proto.RegisterType((*Post)(nil), "Post")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -117,6 +164,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ChatClient interface {
 	Introduce(ctx context.Context, in *IntroRequest, opts ...grpc.CallOption) (*IntroResponse, error)
+	Connect(ctx context.Context, opts ...grpc.CallOption) (Chat_ConnectClient, error)
 }
 
 type chatClient struct {
@@ -136,9 +184,41 @@ func (c *chatClient) Introduce(ctx context.Context, in *IntroRequest, opts ...gr
 	return out, nil
 }
 
+func (c *chatClient) Connect(ctx context.Context, opts ...grpc.CallOption) (Chat_ConnectClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Chat_serviceDesc.Streams[0], "/Chat/Connect", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &chatConnectClient{stream}
+	return x, nil
+}
+
+type Chat_ConnectClient interface {
+	Send(*Post) error
+	Recv() (*Post, error)
+	grpc.ClientStream
+}
+
+type chatConnectClient struct {
+	grpc.ClientStream
+}
+
+func (x *chatConnectClient) Send(m *Post) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *chatConnectClient) Recv() (*Post, error) {
+	m := new(Post)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ChatServer is the server API for Chat service.
 type ChatServer interface {
 	Introduce(context.Context, *IntroRequest) (*IntroResponse, error)
+	Connect(Chat_ConnectServer) error
 }
 
 func RegisterChatServer(s *grpc.Server, srv ChatServer) {
@@ -163,6 +243,32 @@ func _Chat_Introduce_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Chat_Connect_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ChatServer).Connect(&chatConnectServer{stream})
+}
+
+type Chat_ConnectServer interface {
+	Send(*Post) error
+	Recv() (*Post, error)
+	grpc.ServerStream
+}
+
+type chatConnectServer struct {
+	grpc.ServerStream
+}
+
+func (x *chatConnectServer) Send(m *Post) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *chatConnectServer) Recv() (*Post, error) {
+	m := new(Post)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _Chat_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "Chat",
 	HandlerType: (*ChatServer)(nil),
@@ -172,21 +278,30 @@ var _Chat_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Chat_Introduce_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Connect",
+			Handler:       _Chat_Connect_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "chat.proto",
 }
 
-func init() { proto.RegisterFile("chat.proto", fileDescriptor_chat_08414bdb60c06f38) }
+func init() { proto.RegisterFile("chat.proto", fileDescriptor_chat_5679f0ed12d39509) }
 
-var fileDescriptor_chat_08414bdb60c06f38 = []byte{
-	// 134 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_chat_5679f0ed12d39509 = []byte{
+	// 173 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4a, 0xce, 0x48, 0x2c,
 	0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x57, 0xd2, 0xe2, 0xe2, 0xf1, 0xcc, 0x2b, 0x29, 0xca, 0x0f,
 	0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x92, 0xe2, 0xe2, 0x28, 0x2d, 0x4e, 0x2d, 0xca, 0x4b,
 	0xcc, 0x4d, 0x95, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x82, 0xf3, 0x95, 0x34, 0xb9, 0x78, 0xa1,
 	0x6a, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a, 0x53, 0x85, 0x24, 0xb8, 0xd8, 0x73, 0x53, 0x8b, 0x8b, 0x13,
-	0xd3, 0x61, 0x6a, 0x61, 0x5c, 0x23, 0x13, 0x2e, 0x16, 0xe7, 0x8c, 0xc4, 0x12, 0x21, 0x1d, 0x2e,
-	0x4e, 0xb0, 0x96, 0x94, 0xd2, 0xe4, 0x54, 0x21, 0x5e, 0x3d, 0x64, 0xab, 0xa4, 0xf8, 0xf4, 0x50,
-	0x4c, 0x53, 0x62, 0x48, 0x62, 0x03, 0xbb, 0xc9, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0xea, 0xc1,
-	0xa3, 0x44, 0xa1, 0x00, 0x00, 0x00,
+	0xd3, 0x61, 0x6a, 0x61, 0x5c, 0x25, 0x1b, 0x2e, 0x96, 0x80, 0x7c, 0xfc, 0xc6, 0x21, 0xeb, 0x66,
+	0x42, 0xd1, 0x6d, 0x14, 0xcc, 0xc5, 0xe2, 0x9c, 0x91, 0x58, 0x22, 0xa4, 0xc3, 0xc5, 0x09, 0xb6,
+	0x30, 0xa5, 0x34, 0x39, 0x55, 0x88, 0x57, 0x0f, 0xd9, 0xa1, 0x52, 0x7c, 0x7a, 0x28, 0x6e, 0x51,
+	0x62, 0x10, 0x92, 0xe5, 0x62, 0x77, 0xce, 0xcf, 0xcb, 0x4b, 0x4d, 0x2e, 0x11, 0x62, 0xd5, 0x03,
+	0xd9, 0x2e, 0x05, 0xa1, 0x94, 0x18, 0x34, 0x18, 0x0d, 0x18, 0x93, 0xd8, 0xc0, 0x1e, 0x36, 0x06,
+	0x04, 0x00, 0x00, 0xff, 0xff, 0xec, 0x58, 0x74, 0x35, 0xfe, 0x00, 0x00, 0x00,
 }

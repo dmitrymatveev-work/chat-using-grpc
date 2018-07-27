@@ -2,6 +2,7 @@ syntax = "proto3";
 
 service Chat {
     rpc Introduce (IntroRequest) returns (IntroResponse) {}
+    rpc Connect (stream Post) returns (stream Post) {}
 }
 
 message IntroRequest {
@@ -10,4 +11,9 @@ message IntroRequest {
 
 message IntroResponse {
     string message = 1;
+}
+
+message Post {
+    string username = 1;
+    string message = 2;
 }
