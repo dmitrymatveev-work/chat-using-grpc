@@ -16,7 +16,7 @@ namespace ChatServer
             };
             server.Start();
 
-            Console.WriteLine("Greeter server listening on port " + port);
+            Console.WriteLine("Chat server listening on port " + port);
             Console.WriteLine("Press any key to stop the server...");
             Console.ReadKey();
 
