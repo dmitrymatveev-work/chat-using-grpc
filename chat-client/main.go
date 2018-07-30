@@ -59,7 +59,7 @@ func main() {
 			if post.Username == username {
 				continue
 			}
-			fmt.Printf("%s: %s\n", post.Username, strings.Trim(post.Message, "\r\n"))
+			fmt.Printf("%s: %s\n", post.Username)
 		}
 	}()
 
@@ -73,6 +73,10 @@ func main() {
 	go func() {
 		for {
 			message, _ := reader.ReadString('\n')
+			if strings.Trim(message, "\r\n") == "exit" {
+				stream.CloseSend()
+				return
+			}
 			err := stream.Send(&pb.Post{Username: username, Message: message})
 			if err != nil {
 				log.Fatalf("Failed to send a post: %v", err)
@@ -81,7 +85,4 @@ func main() {
 	}()
 
 	<-waitc
-
-	fmt.Println("Press Enter to continue...")
-	bufio.NewReader(os.Stdin).ReadString('\n')
 }

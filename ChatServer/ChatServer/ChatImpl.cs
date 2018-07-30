@@ -50,14 +50,21 @@ namespace ChatServer
 
         private async Task Post(Post post)
         {
-            foreach (var user in _users)
+            foreach (var user in _users.ToArray())
             {
                 var response = user.Value;
                 if (response == null)
                 {
                     continue;
                 }
-                await response.WriteAsync(post);
+                try
+                {
+                    await response.WriteAsync(post);
+                }
+                catch
+                {
+                    _users.TryRemove(user.Key, out IServerStreamWriter<Post> r);
+                }
             }
         }
     }
