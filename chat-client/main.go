@@ -59,7 +59,7 @@ func main() {
 			if post.Username == username {
 				continue
 			}
-			fmt.Printf("%s: %s\n", post.Username)
+			fmt.Printf("%s: %s\n", post.Username, strings.Trim(post.Message, "\r\n"))
 		}
 	}()
 
