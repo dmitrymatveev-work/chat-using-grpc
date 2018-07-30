@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using System;
+using System.Threading.Tasks;
 
 namespace ChatServer
 {
@@ -17,8 +18,7 @@ namespace ChatServer
             server.Start();
 
             Console.WriteLine("Chat server listening on port " + port);
-            Console.WriteLine("Press any key to stop the server...");
-            Console.ReadKey();
+            Task.Delay(-1).Wait();
 
             server.ShutdownAsync().Wait();
         }
