@@ -30,7 +30,7 @@ func main() {
 	username, _ := reader.ReadString('\n')
 	username = strings.Trim(username, "\r\n")
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
 	r, err := c.Introduce(ctx, &pb.IntroRequest{Username: username})

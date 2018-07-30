@@ -13,7 +13,7 @@ namespace ChatServer
             var server = new Server
             {
                 Services = { Chat.BindService(new ChatImpl()) },
-                Ports = { new ServerPort("", port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort(string.Empty, port, ServerCredentials.Insecure) }
             };
             server.Start();
 
