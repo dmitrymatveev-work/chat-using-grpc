@@ -26,12 +26,26 @@ namespace ChatServer
 
         public override async Task Connect(IAsyncStreamReader<Post> request, IServerStreamWriter<Post> response, ServerCallContext context)
         {
-            while (await request.MoveNext())
+            string username;
+            if (await request.MoveNext())
             {
                 var post = request.Current;
-                _users[post.Username] = response;
+                username = post.Username;
+                _users[username] = response;
+                await Post(post);
+            }
+            else
+            {
+                return;
+            }
+
+            while (await request.MoveNext())
+            {
                 await Post(request.Current);
             }
+
+            _users.TryRemove(username, out IServerStreamWriter<Post> r);
+            await Post(new Post { Username = username, Message = "Quitted." });
         }
 
         private async Task Post(Post post)

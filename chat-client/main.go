@@ -14,10 +14,16 @@ import (
 	"google.golang.org/grpc"
 )
 
-const address = "localhost:50051"
+const port = "50051"
 
 func main() {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter server name/address: ")
+	address, _ := reader.ReadString('\n')
+	address = strings.Trim(address, "\r\n")
+
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%s", address, port), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -25,7 +31,6 @@ func main() {
 
 	c := pb.NewChatClient(conn)
 
-	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter username: ")
 	username, _ := reader.ReadString('\n')
 	username = strings.Trim(username, "\r\n")
@@ -51,9 +56,19 @@ func main() {
 			if err != nil {
 				log.Fatalf("Failed to receive a post : %v", err)
 			}
-			fmt.Printf("%s: %s\n", post.Username, post.Message)
+			if post.Username == username {
+				continue
+			}
+			fmt.Printf("%s: %s\n", post.Username, strings.Trim(post.Message, "\r\n"))
 		}
 	}()
+
+	{
+		err := stream.Send(&pb.Post{Username: username, Message: "Entered."})
+		if err != nil {
+			log.Fatalf("Failed to send a post: %v", err)
+		}
+	}
 
 	go func() {
 		for {
