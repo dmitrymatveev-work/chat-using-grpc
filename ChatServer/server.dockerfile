@@ -1,9 +1,7 @@
 FROM microsoft/dotnet:latest
 
-RUN cd home
-RUN git clone https://github.com/dmitrymatveev-work/chat-using-grpc.git
-RUN cd ./chat-using-grpc/ChatServer/ChatServer
-RUN dotnet build --configuration Release -o ./bin
+RUN cd home && git clone https://github.com/dmitrymatveev-work/chat-using-grpc.git
+RUN cd /home/chat-using-grpc/ChatServer/ChatServer && dotnet build --configuration Release -o ./bin
 
 EXPOSE 50051/tcp
 
